@@ -12,41 +12,38 @@
 
 (enable-console-print!)
 
-(def variable? symbol?)
-
-(defn same-variable? [v1 v2]
-  (and (variable? v1) (variable? v2) (= v1 v2)))
-
 ;; Helpful getters
 (defn third [e]
   (nth e 2))
 
-(defn get-op [e]
-  (first e))
-
-(defn get-arg1 [e]
-  (second e))
-
-(defn get-arg2 [e]
-  (third e))
-
-(defn make-sum [a b]
-  ['+ a b])
-
-(defn make-product [a b]
-  ['* a b])
-
+(def get-op first)
+(def get-arg1 second)
+(def get-arg2 third)
 (def addend get-arg1)
 (def augend get-arg2)
 (def multiplier get-arg1)
 (def multiplicand get-arg2)
 
+;; Predicates
 (defn is-op? [e op]
   (and (list? e) (= (get-op e) op)))
 
 (defn sum? [e] (is-op? e '+))
 (defn product? [e] (is-op? e '*))
 
+(def variable? symbol?)
+
+(defn same-variable? [v1 v2]
+  (and (variable? v1) (variable? v2) (= v1 v2)))
+
+;; Creating new expressions
+(defn make-sum [a b]
+  ['+ a b])
+
+(defn make-product [a b]
+  ['* a b])
+
+;; Derivative method
 (defn deriv [exp var]
   "Take derivative of exp w.r.t. var. Makes some assumptions about exp being well formed."
   (cond
