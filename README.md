@@ -1,10 +1,6 @@
 # diffy
 
-FIXME: Write a one-line description of your library/project.
-
-## Overview
-
-FIXME: Write a paragraph about the library/project and highlight its goals.
+Learning clojurescript by implementing differentiation.
 
 ## Setup
 
@@ -34,6 +30,6 @@ get live reloading, nor a REPL.
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2017 David Dohan
 
-Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
+Distributed under the Eclipse Public License version 1.0
