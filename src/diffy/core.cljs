@@ -1,5 +1,9 @@
 (ns diffy.core
-  (:require [cljs.test :refer-macros [deftest is testing run-tests]]))
+  (:require [cljs.test :refer-macros [deftest is testing run-tests]]
+            [reagent.core :as r]
+            [clojure.string :as str]
+            [cljs.reader :as reader]
+            ))
 (comment
   "
   This follows the implementation presented in the SICP book:
@@ -11,6 +15,9 @@
   ")
 
 (enable-console-print!)
+(defn log [s]
+  (.log js/console s)
+  )
 
 (def variable? symbol?)
 
@@ -73,15 +80,15 @@
   (is (= 1 (deriv 'x 'x)))
   (is (= 0 (deriv 'y 'x)))
 
-    ;; Add
+  ;; Add
   (is (= '(+ 1 0) (deriv '(+ x 3) 'x)))
   (is (= '(+ 1 1) (deriv '(+ x x) 'x)))
   (is (= '(+ 0 0) (deriv '(+ x 3) 'y)))
 
-    ;; Product
+  ;; Product
   (is (= '(+ (* x 0) (* 1 y)) (deriv '(* x y) 'x)))
 
-    ;; Nested
+  ;; Nested
   (is (= '(+ (* (* x y) (+ 1 0))
              (* (+ (* x 0) (* 1 y))
                 (+  x 3)))
@@ -108,4 +115,71 @@
 
   (is (= true (product? '(* x 1)))))
 
-(cljs.test/run-tests)
+;; (cljs.test/run-tests)
+(println "We're running!")
+
+(defn simple-component []
+  [:div
+   [:p "I am a component!"]
+   [:p.someclass
+    "I have " [:strong "bold"]
+    [:span {:style {:color "red"}} " and red "] "text."]])
+
+(def equation (r/atom "+ x (* x y)"))
+(def variable (r/atom "x"))
+(def derivative (r/atom "1"))
+
+
+(defn simplify [e]
+  (do
+    (cond
+      (= (count e) 1)
+      (first e)
+
+      (= (count e) 3)
+      e
+
+      :else
+      (do
+        (log "Simplify error?")
+        e)
+      )))
+
+(defn parse-infix [s]
+  (let [wrapped (str "(" s ")")
+        parsed (simplify (reader/read-string wrapped))]
+    parsed
+    )
+  )
+
+(defn derivative-block [s]
+                  [:span (str (deriv (parse-infix @equation) (symbol @variable)))])
+
+(defn calculator []
+  [:div
+   [:span " Derivative of " ]
+   [:input {:type "text"
+            :value @equation
+            ;; :on-change #(swap! equation %)
+            :on-change #(reset! equation (-> % .-target .-value))
+            }]
+   [:span " w.r.t. " ]
+   [:input {:type "text"
+            :value @variable
+            ;; :on-change #(swap! equation %)
+            :on-change #(reset! variable (-> % .-target .-value))
+            }]
+   [:p [:span " = "]
+    ;; Parse the equation and take the derivative
+    [derivative-block]
+   ]])
+
+(r/render [calculator]
+          (.getElementById js/document "app"))
+
+
+
+;; 1. Input
+;; 2. Parse string to infix notation
+;; 3. Apply derivative
+;; 4. Show derivative
