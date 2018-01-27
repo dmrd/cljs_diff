@@ -115,16 +115,6 @@
 
   (is (= true (product? '(* x 1)))))
 
-;; (cljs.test/run-tests)
-(println "We're running!")
-
-(defn simple-component []
-  [:div
-   [:p "I am a component!"]
-   [:p.someclass
-    "I have " [:strong "bold"]
-    [:span {:style {:color "red"}} " and red "] "text."]])
-
 (def equation (r/atom "+ x (* x y)"))
 (def variable (r/atom "x"))
 (def derivative (r/atom "1"))
@@ -153,7 +143,7 @@
   )
 
 (defn derivative-block [s]
-                  [:span (str (deriv (parse-infix @equation) (symbol @variable)))])
+  [:span (str (deriv (parse-infix @equation) (symbol @variable)))])
 
 (defn calculator []
   [:div
@@ -174,12 +164,15 @@
     [derivative-block]
    ]])
 
-(r/render [calculator]
-          (.getElementById js/document "app"))
-
 
 
 ;; 1. Input
 ;; 2. Parse string to infix notation
 ;; 3. Apply derivative
 ;; 4. Show derivative
+
+;; (cljs.test/run-tests)
+
+(r/render [calculator]
+          (.getElementById js/document "app"))
+
